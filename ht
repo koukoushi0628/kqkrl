@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>THE TIME, Clock</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(to bottom, #0077cc, #002244); /* 青→紺のグラデーション */
+      font-family: 'Helvetica Neue', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: row;
+      color: white;
+    }
+
+    #time {
+      font-size: 6em;
+      font-weight: bold;
+    }
+
+    #seconds-container {
+      position: relative;
+      width: 60px;
+      height: 60px;
+      overflow: hidden;
+      margin-left: 20px;
+      align-self: flex-end;
+    }
+
+    .second {
+      position: absolute;
+      width: 100%;
+      text-align: left;
+      font-size: 3em;
+      font-weight: bold;
+      color: yellow;
+      transition: transform 0.4s ease-in-out;
+    }
+
+    .slide-up {
+      transform: translateY(-100%);
+    }
+
+    .slide-down {
+      transform: translateY(0%);
+    }
+  </style>
+</head>
+<body>
+  <div id="time">--:--</div>
+  <div id="seconds-container">
+    <div id="sec-current" class="second slide-down">--</div>
+    <div id="sec-next" class="second" style="top: 100%;">--</div>
+  </div>
+
+  <script>
+    let prevRoundedSec = null;
+
+    function updateClock() {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const seconds = now.getSeconds();
+      const roundedSeconds = Math.floor(seconds / 10) * 10;
+
+      document.getElementById("time").textContent = `${hours}:${minutes}`;
+
+      if (roundedSeconds !== prevRoundedSec) {
+        const secCurrent = document.getElementById("sec-current");
+        const secNext = document.getElementById("sec-next");
+
+        secNext.textContent = roundedSeconds.toString().padStart(2, '0');
+
+        secCurrent.classList.remove("slide-down");
+        secCurrent.classList.add("slide-up");
+        secNext.style.top = "0%";
+        secNext.classList.add("slide-down");
+
+        setTimeout(() => {
+          secCurrent.textContent = secNext.textContent;
+          secCurrent.classList.remove("slide-up");
+          secCurrent.classList.add("slide-down");
+          secNext.classList.remove("slide-down");
+          secNext.style.top = "100%";
+        }, 400);
+
+        prevRoundedSec = roundedSeconds;
+      }
+    }
+
+    updateClock();
+    setInterval(updateClock, 200);
+  </script>
+</body>
+</html>
